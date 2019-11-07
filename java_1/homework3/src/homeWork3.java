@@ -47,9 +47,7 @@ public class homeWork3 {
     private static boolean isValidCell(int x, int y) {
         return x >= 0 && x < fieldSizeX && y >= 0 && y < fieldSizeY;
     }
-    private static boolean isEmptyCell(int x, int y) {
-        return field[y][x] == DOT_EMPTY;
-    }
+    private static boolean isEmptyCell(int x, int y) { return field[y][x] == DOT_EMPTY;    }
     private static boolean isDraw() {
         for (int i = 0; i < fieldSizeY; i++) {
             for (int j = 0; j < fieldSizeX; j++) {
@@ -73,10 +71,11 @@ public class homeWork3 {
                 break;
             }
             if (isDraw()) {
-                             System.out.println("Draw!");
+                System.out.println("Draw!");
                 break;
             }
-            // chekStep(DOT_HUMAN);
+            if (chekChanse(DOT_HUMAN,winNumber-1)) field[xStep][yStep]=DOT_AI;
+            showField();
             /*           aiTurn();                            //отключил для проверки
             System.out.println("step AI ------");
             showField();
@@ -94,89 +93,6 @@ public class homeWork3 {
 
 
     }
-    /*видимо выбрал не правильную стратегию для хода компьютера(((
-     * проверка на выигрышность  выполнил двумя способами( оч похожи)
-     * 1- выбираем квадрат размером выигрыша и пробегаем им по полю, проверяя его
-     * 2- пробегаем по всем клеточкам слева направо по полю меньшим на выигрыш и от клетки проверяем */
-/*111111111111111111111111111111*/
- /*
-разбивал поле на квадраты размером выигрышного числа
-в квадрате проверял столбцы. колонки и диагонали на выигрыш
-квадратом пробегал по всему полю.
-для*/
-
-    //pass a small square(size of winsize) over a large rectangle
-    private static boolean checkWin(char c,int size) {
-        for (int i=0; i<=fieldSizeY-size; i++)
-            for (int j=0; j<=fieldSizeX-size;j++)
-                if (checkLine(c,size,i,j)||checkDiag(c,size,i,j)) return true;
-        return false;
-    }
-    //check diagonal in sqaresize
-    private static boolean checkDiag(char symb, int size,int ystart, int xstart){
-        boolean fd=true, sd=true;
-        for (int k=0; k<=ystart; k++) {
-            for (int l = 0; l <= xstart; l++) {
-                fd = true;
-                sd = true;
-                for (int i = 0; i < size; i++) {
-                    fd = fd & (field[i + k][i + l] == symb);
-                    sd = sd & (field[i + k][size - i -1 + l] == symb);
-                }
-                if (fd || sd) {
-                    xStep=k;
-                    yStep=l;
-                    return true;
-
-                }
-            }
-        }
-        return false;
-    }
-
-    //check row and col in squaresize
-    private static boolean checkLine (char symb, int size,int ystart,int xstart){
-        boolean row, col;
-        for (int i=0; i<size; i++){
-            row=true;
-            col=true;
-            for (int j=0; j<size; j++){
-                row=row&(field[j+ystart][i+xstart]==symb);
-                col=col&(field[i+ystart][j+xstart]==symb);
-            }
-            if (col||row){
-                xStep=xstart;
-                yStep=ystart;
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static void aiTurn() {
-        int x, y;
-        findStep(DOT_AI);
-        findStep(DOT_HUMAN);
-
-        do {
-            x = RANDOM.nextInt(fieldSizeX);
-            y = RANDOM.nextInt(fieldSizeY);
-        } while (!isEmptyCell(x, y));
-        field[y][x] = DOT_AI;
-    }
-
-    private static boolean findStep(char c){
-        int x,y;
-        if (checkWin(c,winNumber-1)) {
-            System.out.printf("%c have chanse \n",c);
-
-            System.out.println(xStep);
-            System.out.println(yStep);
-            return true;
-        }
-        return false;
-    }
-/*222222222222222222222222222222222222222222222*/
 
     //  проверка от исх точки на size значений вниз
     private static boolean chDown(char c, int x,int y, int size){
@@ -223,55 +139,72 @@ public class homeWork3 {
         }
         return false;
     }
+    private static boolean chekrigh(int i, int j,int size, int gran){
+        if ((j==0)&&isEmptyCell(size,i)){
+            xStep=i;
+            yStep=size;
+            System.out.printf("step to %d,%d \n",xStep,yStep);
+            return true;}
+        else if ((j==gran-size)&&isEmptyCell((gran-size-1),i)){
+            xStep=i;
+            yStep=gran-size-1;
+            System.out.printf("step to %d,%d\n",xStep,yStep);
+            return true;}
+        else {
+            if ((j>0)&&(j<gran-size)
+                    &&isEmptyCell(j-1,i)){
+                xStep=i;yStep=j-1;System.out.printf("step to %d,%d\n",xStep,yStep); return true;}
+            if ((j>0)&&(j<gran-size)
+                    &&isEmptyCell(j+winNumber-1,i)){
+                xStep=i;yStep=j+winNumber-1;System.out.printf("step to %d,%d\n",xStep,yStep); return true;}
 
- /*   private static boolean chekChanse(char c,int size){
+        }
+        return false;
+    }
+    private static boolean checkdow(int i,int j,int size,int gran){
+        if ((i==0)&&isEmptyCell(j,size)){
+            xStep=size;
+            yStep=j;
+            System.out.printf("step to %d,%d \n",xStep,yStep);
+            return true;}
+        else if ((i==gran-size)&&isEmptyCell(j,(gran-size-1))){
+            xStep=gran-size-1;
+            yStep=j;
+            System.out.printf("step to %d,%d\n",xStep,yStep);
+            return true;}
+        else {
+            if ((i>0)&&(i<gran-size)
+                    &&isEmptyCell(j,i-1)){
+                xStep=i-1;yStep=j;System.out.printf("step to %d,%d\n",xStep,yStep); return true;}
+            if ((i>0)&&(i<gran-size)
+                    &&isEmptyCell(j,i+winNumber-1)){
+                xStep=i+winNumber-1;yStep=j;System.out.printf("step to %d,%d\n",xStep,yStep); return true;}
+
+        }
+        return false;
+
+    }
+
+    private static boolean chekChanse(char c,int size){
         for (int i = 0; i < fieldSizeY; i++){
             for (int j = 0; j < fieldSizeX; j++) {
                 if (j <= (fieldSizeX - size) && chRight(c, i, j, size)) {
-                    xStep
-
-                }return true;
-                if (i <= (fieldSizeY - size) && chDown(c, i, j, winNumber)) return true;
+                    if (chekrigh(i,j,size,fieldSizeX)) return true;
+                }
+                if (i<=(fieldSizeY-size)&&chDown(c,i,j,size)){
+                    if (checkdow(i,j,size,fieldSizeY)) return true;
+                }
+               /* if (i <= (fieldSizeY - size) && chDown(c, i, j, winNumber)) return true;
                 if ((j <= (fieldSizeX - size)) && (i<=(fieldSizeY-size)) &&
                         (chFDiag(c, i, j, size)||chSDiag(c,i,j,size))) return true;
-
+*/
             }
         }
         return false;
 
     }
 
-   */
-
-        //в идеале должны пробежать по всему полю и проверить на winNuber-1
-    /*проблема в крайних значениях- вылазим за пределы при проверке на свободность ячейки*/
- /*   private static boolean chekStep(char c){
-        int size=winNumber-1;
-        for (int i=0; i<fieldSizeY;i++)
-            for (int j=0; j<fieldSizeX;j++){
-
-                if ((i<(fieldSizeY-size))&&chDown(c,i,j,size)&&isEmptyCell(j,i+size)){
-                    xStep=i+size;
-                    yStep=j;
-                    field[xStep][yStep] = DOT_AI;
-                    showField();
-                    return true;
-                }
-                if ((j<(fieldSizeX-size))&&chRight(c,i,j,size)&&isEmptyCell(j+size,i)){
-                    xStep=i;
-                    yStep=j+size;
-                    field[xStep][yStep]=DOT_AI;
-                    showField();
-
-                    return true;
-                }
 
 
-
-            }
-        return false;
-    }
-
-*/
 
 }
