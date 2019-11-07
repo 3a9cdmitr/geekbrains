@@ -68,16 +68,16 @@ public class homeWork3 {
         while (true) {
             humanTurn();
             showField();
-            if (checkWin(DOT_HUMAN,winNumber)) {
+            if (checkWin2(DOT_HUMAN,winNumber)) {
                 System.out.println("Human win!");
                 break;
             }
             if (isDraw()) {
-                System.out.println("Draw!");
+                             System.out.println("Draw!");
                 break;
             }
             // chekStep(DOT_HUMAN);
- /*           aiTurn();                            //отключил для проверки
+            /*           aiTurn();                            //отключил для проверки
             System.out.println("step AI ------");
             showField();
             if (checkWin2(DOT_AI)) {
@@ -210,19 +210,42 @@ public class homeWork3 {
     private static boolean checkRound(char c, int x, int y,int size){
         return (chRight(c,x,y,size)||chDown(c,x,y,size)||chFDiag(c,x,y,size)||chSDiag(c,x,y,size));
     }
-    // идем слева направо по всему полю, не доходя до краев на winNumber и проверяем chekRound
-    //не проверяет все поле(((( НЕ РАБОТАЕТ
-    private static boolean checkWin2(char c){
-        for (int i=0; i<fieldSizeY;i++)
-            for (int j=0; j<fieldSizeX ;j++){
-                // if (i<(fieldSizeY-winNumber)&&chRight(c,x,y,winNumber)
+    // идем слева направо по всему полю и проверяем
+    private static boolean checkWin2(char c,int size) {
+        for (int i = 0; i < fieldSizeY; i++){
+            for (int j = 0; j < fieldSizeX; j++) {
+                if (j <= (fieldSizeX - size) && chRight(c, i, j, size)) return true;
+                if (i <= (fieldSizeY - size) && chDown(c, i, j, winNumber)) return true;
+                if ((j <= (fieldSizeX - size)) && (i<=(fieldSizeY-size)) &&
+                        (chFDiag(c, i, j, size)||chSDiag(c,i,j,size))) return true;
 
-                if (checkRound(c,i,j,winNumber)) return true;}
+            }
+        }
         return false;
     }
-    //в идеале должны пробежать по всему полю и проверить на winNuber-1
+
+ /*   private static boolean chekChanse(char c,int size){
+        for (int i = 0; i < fieldSizeY; i++){
+            for (int j = 0; j < fieldSizeX; j++) {
+                if (j <= (fieldSizeX - size) && chRight(c, i, j, size)) {
+                    xStep
+
+                }return true;
+                if (i <= (fieldSizeY - size) && chDown(c, i, j, winNumber)) return true;
+                if ((j <= (fieldSizeX - size)) && (i<=(fieldSizeY-size)) &&
+                        (chFDiag(c, i, j, size)||chSDiag(c,i,j,size))) return true;
+
+            }
+        }
+        return false;
+
+    }
+
+   */
+
+        //в идеале должны пробежать по всему полю и проверить на winNuber-1
     /*проблема в крайних значениях- вылазим за пределы при проверке на свободность ячейки*/
-    private static boolean chekStep(char c){
+ /*   private static boolean chekStep(char c){
         int size=winNumber-1;
         for (int i=0; i<fieldSizeY;i++)
             for (int j=0; j<fieldSizeX;j++){
@@ -249,6 +272,6 @@ public class homeWork3 {
         return false;
     }
 
-
+*/
 
 }
