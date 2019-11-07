@@ -3,8 +3,8 @@ import java.util.Scanner;
 
 public class homeWork3 {
     private static char[][] field;
-    private static int fieldSizeX = 8;
-    private static int fieldSizeY = 5;
+    private static int fieldSizeX = 9;
+    private static int fieldSizeY = 6;
     private static int winNumber =3;
     private static int xStep;
     private static int yStep;
@@ -74,12 +74,11 @@ public class homeWork3 {
                 System.out.println("Draw!");
                 break;
             }
-            if (chekChanse(DOT_HUMAN,winNumber-1)) field[xStep][yStep]=DOT_AI;
-            showField();
-            /*           aiTurn();                            //отключил для проверки
+
+                      aiTurn();                            //отключил для проверки
             System.out.println("step AI ------");
             showField();
-            if (checkWin2(DOT_AI)) {
+            if (checkWin2(DOT_AI,winNumber)) {
                 System.out.println("Computer win!");
                 break;
             }
@@ -87,7 +86,7 @@ public class homeWork3 {
                 System.out.println("Draw!");
                 break;
             }
-*/
+
 
         }
 
@@ -177,7 +176,7 @@ public class homeWork3 {
                     &&isEmptyCell(j,i-1)){
                 xStep=i-1;yStep=j;System.out.printf("step to %d,%d\n",xStep,yStep); return true;}
             if ((i>0)&&(i<gran-size)
-                    &&isEmptyCell(j,i+winNumber-1)){
+                    &&isEmptyCell(j,i+winNumber)){
                 xStep=i+winNumber-1;yStep=j;System.out.printf("step to %d,%d\n",xStep,yStep); return true;}
 
         }
@@ -194,14 +193,42 @@ public class homeWork3 {
                 if (i<=(fieldSizeY-size)&&chDown(c,i,j,size)){
                     if (checkdow(i,j,size,fieldSizeY)) return true;
                 }
-               /* if (i <= (fieldSizeY - size) && chDown(c, i, j, winNumber)) return true;
-                if ((j <= (fieldSizeX - size)) && (i<=(fieldSizeY-size)) &&
-                        (chFDiag(c, i, j, size)||chSDiag(c,i,j,size))) return true;
-*/
+              /*  if ((i<=fieldSizeY-size)&&(j<=fieldSizeX-size)&&(chFDiag(c,i,j,size)||chSDiag(c,i,j,size))){
+                    System.out.println("we have diagon");
+                    //down
+                    if (i==fieldSizeY-size){
+
+                    }
+                    //right
+                    if (j==fieldSizeX-size){
+                        if (i==fieldSizeY-size) ;
+                    }
+                    //up
+                    if (i==0){
+                        if (j==0) return false;
+                    }
+                    //left
+                    if (j==0){}
+                }*/
+
             }
         }
         return false;
 
+    }
+
+    private static void aiTurn() {
+        int x, y;
+        if (chekChanse(DOT_AI,winNumber-1)) {field[yStep][xStep]=DOT_AI;}
+        else  if (chekChanse(DOT_HUMAN,winNumber-1)) {field[yStep][xStep]=DOT_AI;}
+        else {
+
+            do {
+                x = RANDOM.nextInt(fieldSizeX);
+                y = RANDOM.nextInt(fieldSizeY);
+            } while (!isEmptyCell(x, y));
+            field[y][x] = DOT_AI;
+        }
     }
 
 
