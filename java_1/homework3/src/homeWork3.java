@@ -1,11 +1,11 @@
 import java.util.Random;
 import java.util.Scanner;
-
+/*работает на поле любого размера с любим выигрышным числом*/
 public class homeWork3 {
     private static char[][] field;
     private static int fieldSizeX = 9;
     private static int fieldSizeY = 6;
-    private static int winNumber =3;
+    private static int winNumber = 3;       //выигрышное число
     private static int xStep;
     private static int yStep;
     private static final Scanner SCANNER = new Scanner(System.in);
@@ -22,6 +22,7 @@ public class homeWork3 {
             }
         }
     }
+
     private static void showField() {
         for (int i = 0; i < fieldSizeY; i++) {
             //           System.out.println("-------------");
@@ -44,10 +45,15 @@ public class homeWork3 {
         } while (!isValidCell(x, y) || !isEmptyCell(x, y));
         field[y][x] = DOT_HUMAN;
     }
+
     private static boolean isValidCell(int x, int y) {
         return x >= 0 && x < fieldSizeX && y >= 0 && y < fieldSizeY;
     }
-    private static boolean isEmptyCell(int x, int y) { return field[y][x] == DOT_EMPTY;    }
+
+    private static boolean isEmptyCell(int x, int y) {
+        return field[y][x] == DOT_EMPTY;
+    }
+
     private static boolean isDraw() {
         for (int i = 0; i < fieldSizeY; i++) {
             for (int j = 0; j < fieldSizeX; j++) {
@@ -56,17 +62,18 @@ public class homeWork3 {
         }
         return true;
     }
+
     public static void main(String[] args) {
-//        System.out.print("Enter size X and Y:");//можно вводить ручками
+//        System.out.print("Enter size X and Y and windNumber:");//можно вводить ручками
 //        fieldSizeX=SCANNER.nextInt();
 //        fieldSizeY=SCANNER.nextInt();
-
+//        winNumber=SCANNER.nextInt();
         initField();
         showField();
         while (true) {
             humanTurn();
             showField();
-            if (checkWin2(DOT_HUMAN,winNumber)) {
+            if (checkWin3(DOT_HUMAN, winNumber)) {
                 System.out.println("Human win!");
                 break;
             }
@@ -75,10 +82,10 @@ public class homeWork3 {
                 break;
             }
 
-                      aiTurn();                            //отключил для проверки
+            aiTurn();
             System.out.println("step AI ------");
             showField();
-            if (checkWin2(DOT_AI,winNumber)) {
+            if (checkWin3(DOT_AI, winNumber)) {
                 System.out.println("Computer win!");
                 break;
             }
@@ -90,148 +97,137 @@ public class homeWork3 {
 
         }
 
+    }
 
+
+    //проверка на выигрыш
+    private static boolean checkWin3(char c, int size) {
+        for (int i = 0; i < fieldSizeY; i++) {
+            for (int j = 0; j < fieldSizeX; j++) {
+                if (chDown(c, i, j, size) || chRight(c, i, j, size) || chFDiag(c, i, j, size) || chSDiag(c, i, j, size))
+                    return true;
+            }
+        }
+        return false;
     }
 
     //  проверка от исх точки на size значений вниз
-    private static boolean chDown(char c, int x,int y, int size){
-        boolean good=true;
-        for (int  i=0; i<size; i++)
-            good&=(field[x+i][y]==c);
-        return good;
+    /*если координаты удовлетворяют проверке, не выходя за границы, то проверяем по соотв направлению.
+    * в счетчик закидываем кол-во клеточек с заданным символом.
+    * если символ не совпадает- запоминаем коорд
+    * в случае кода колво симовлов совпадает с колвом клеток- выиграли,
+    * в случае если не хватате одного символа- проверяем его на пустую клетку и  если тру- запоминаем глобальными
+    * приходится проверять каждую сторону по отдельности, поскольку сразу передаем координаты
+    * если делаю один цикл прохода от точки в ширину по всем направлениям сразу, то выигрыш определитьь можно,
+    * а каким образом вытащить координаты пустой клетки- не догадываюсь((
+    * */
+    private static boolean chDown(char c, int x, int y, int size) {
+        if (x <= fieldSizeY - size) {//проверка на выход за пределы
+            int numbchek = 0;//сколько символов
+            int t_x = x, t_y = y;//временные переменные для координат
+            for (int i = 0; i < size; i++) {
+                if (field[x + i][y] == c) {
+                    numbchek++;
+                } else {//
+                    t_x = x + i;
+                    t_y = y;
+                }
+            }
+            if (numbchek == size) return true;
+            else if ((numbchek == size - 1) && isEmptyCell(t_y, t_x)) {// если не хватает одного хода и его можно сделать
+                xStep = t_x;
+                yStep = t_y;
+            }
+        }
+        return false;
     }
+
     //проверка от исх точки на size значений вправо
-    private static boolean chRight(char c, int x,int y, int size){
-        boolean good=true;
-        for (int  j=0; j<size; j++)
-            good&=(field[x][y+j]==c);
-        return good;
+    private static boolean chRight(char c, int x, int y, int size) {
+        if (y <= fieldSizeX - size) {
+            int numbchek = 0;
+            int t_x = x, t_y = y;
+            for (int i = 0; i < size; i++) {
+                if (field[x][y + i] == c) {
+                    numbchek++;
+                } else {
+                    t_x = x;
+                    t_y = y + i;
+                }
+            }
+            if (numbchek == size) return true;
+            else if ((numbchek == size - 1) && isEmptyCell(t_y, t_x)) {
+                xStep = t_x;
+                yStep = t_y;
+            }
+        }
+        return false;
     }
+
     //проверка от исх точки на size значений по диагонали вправо-вниз
-    private static boolean chFDiag(char c, int x,int y, int size){
-        boolean good=true;
-        for (int  i=0; i<size; i++)
-            good&=(field[x+i][y+i]==c);
-        return good;
-    }
-    //проверка НЕ от исх точки на size значений по диагонали левыйнижний-правверхний
-    private static boolean chSDiag(char c, int x,int y, int size){
-        boolean good=true;
-        for (int  i=0; i<size; i++)
-            good&=(field[x+size-i-1][y+i]==c);
-        return good;
-    }
-    // проверяем от исходной точки вправо, вниз, по диагоналям
-    private static boolean checkRound(char c, int x, int y,int size){
-        return (chRight(c,x,y,size)||chDown(c,x,y,size)||chFDiag(c,x,y,size)||chSDiag(c,x,y,size));
-    }
-    // идем слева направо по всему полю и проверяем
-    private static boolean checkWin2(char c,int size) {
-        for (int i = 0; i < fieldSizeY; i++){
-            for (int j = 0; j < fieldSizeX; j++) {
-                if (j <= (fieldSizeX - size) && chRight(c, i, j, size)) return true;
-                if (i <= (fieldSizeY - size) && chDown(c, i, j, winNumber)) return true;
-                if ((j <= (fieldSizeX - size)) && (i<=(fieldSizeY-size)) &&
-                        (chFDiag(c, i, j, size)||chSDiag(c,i,j,size))) return true;
-
+    private static boolean chFDiag(char c, int x, int y, int size) {
+        if ((x <= fieldSizeY - size) && (y <= fieldSizeX - size)) {
+            int numbchek = 0;
+            int t_x = x, t_y = y;
+            for (int i = 0; i < size; i++) {
+                if (field[x + i][y + i] == c) {
+                    numbchek++;
+                } else {
+                    t_x = x + i;
+                    t_y = y + i;
+                }
+            }
+            if (numbchek == size) return true;
+            else if ((numbchek == size - 1) && isEmptyCell(t_y, t_x)) {
+                xStep = t_x;
+                yStep = t_y;
             }
         }
         return false;
     }
-    private static boolean chekrigh(int i, int j,int size, int gran){
-        if ((j==0)&&isEmptyCell(size,i)){
-            xStep=i;
-            yStep=size;
-            System.out.printf("step to %d,%d \n",xStep,yStep);
-            return true;}
-        else if ((j==gran-size)&&isEmptyCell((gran-size-1),i)){
-            xStep=i;
-            yStep=gran-size-1;
-            System.out.printf("step to %d,%d\n",xStep,yStep);
-            return true;}
-        else {
-            if ((j>0)&&(j<gran-size)
-                    &&isEmptyCell(j-1,i)){
-                xStep=i;yStep=j-1;System.out.printf("step to %d,%d\n",xStep,yStep); return true;}
-            if ((j>0)&&(j<gran-size)
-                    &&isEmptyCell(j+winNumber-1,i)){
-                xStep=i;yStep=j+winNumber-1;System.out.printf("step to %d,%d\n",xStep,yStep); return true;}
 
-        }
-        return false;
-    }
-    private static boolean checkdow(int i,int j,int size,int gran){
-        if ((i==0)&&isEmptyCell(j,size)){
-            xStep=size;
-            yStep=j;
-            System.out.printf("step to %d,%d \n",xStep,yStep);
-            return true;}
-        else if ((i==gran-size)&&isEmptyCell(j,(gran-size-1))){
-            xStep=gran-size-1;
-            yStep=j;
-            System.out.printf("step to %d,%d\n",xStep,yStep);
-            return true;}
-        else {
-            if ((i>0)&&(i<gran-size)
-                    &&isEmptyCell(j,i-1)){
-                xStep=i-1;yStep=j;System.out.printf("step to %d,%d\n",xStep,yStep); return true;}
-            if ((i>0)&&(i<gran-size)
-                    &&isEmptyCell(j,i+winNumber)){
-                xStep=i+winNumber-1;yStep=j;System.out.printf("step to %d,%d\n",xStep,yStep); return true;}
-
-        }
-        return false;
-
-    }
-
-    private static boolean chekChanse(char c,int size){
-        for (int i = 0; i < fieldSizeY; i++){
-            for (int j = 0; j < fieldSizeX; j++) {
-                if (j <= (fieldSizeX - size) && chRight(c, i, j, size)) {
-                    if (chekrigh(i,j,size,fieldSizeX)) return true;
+    //проверка  от исх точки на size значений по диагонали вправо-вверх
+    private static boolean chSDiag(char c, int x, int y, int size) {
+        if ((x >= size - 1) && (y <= fieldSizeX - size)) {
+            int numbchek = 0;
+            int t_x = x, t_y = y;
+            for (int i = 0; i < size; i++) {
+                if (field[x - i][y + i] == c) {
+                    numbchek++;
+                } else {
+                    t_x = x - i;
+                    t_y = y + i;
                 }
-                if (i<=(fieldSizeY-size)&&chDown(c,i,j,size)){
-                    if (checkdow(i,j,size,fieldSizeY)) return true;
-                }
-              /*  if ((i<=fieldSizeY-size)&&(j<=fieldSizeX-size)&&(chFDiag(c,i,j,size)||chSDiag(c,i,j,size))){
-                    System.out.println("we have diagon");
-                    //down
-                    if (i==fieldSizeY-size){
-
-                    }
-                    //right
-                    if (j==fieldSizeX-size){
-                        if (i==fieldSizeY-size) ;
-                    }
-                    //up
-                    if (i==0){
-                        if (j==0) return false;
-                    }
-                    //left
-                    if (j==0){}
-                }*/
-
+            }
+            if (numbchek == size) return true;
+            else if ((numbchek == size - 1) && isEmptyCell(t_y, t_x)) {
+                xStep = t_x;
+                yStep = t_y;
             }
         }
         return false;
 
     }
+
 
     private static void aiTurn() {
         int x, y;
-        if (chekChanse(DOT_AI,winNumber-1)) {field[yStep][xStep]=DOT_AI;}
-        else  if (chekChanse(DOT_HUMAN,winNumber-1)) {field[yStep][xStep]=DOT_AI;}
+        if (!checkWin3(DOT_AI, winNumber)) //ищем таким образом выигрышные координаты
+            field[xStep][yStep] = DOT_AI;
         else {
 
-            do {
-                x = RANDOM.nextInt(fieldSizeX);
-                y = RANDOM.nextInt(fieldSizeY);
-            } while (!isEmptyCell(x, y));
-            field[y][x] = DOT_AI;
+            if (!checkWin3(DOT_HUMAN, winNumber))  //ищем координаты помехи
+                field[xStep][yStep] = DOT_AI;
+            else {
+
+                do {
+                    x = RANDOM.nextInt(fieldSizeX);
+                    y = RANDOM.nextInt(fieldSizeY);
+                } while (!isEmptyCell(x, y));
+                field[y][x] = DOT_AI;
+            }
         }
     }
-
-
 
 
 }
